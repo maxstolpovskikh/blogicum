@@ -1,7 +1,6 @@
 from typing import Final
 from datetime import datetime
 
-from django.db.models.base import Model as Model
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
