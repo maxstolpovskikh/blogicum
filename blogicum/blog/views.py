@@ -1,24 +1,14 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
 
-from .constants import POST_LIST_LEN
 from .forms import CommentForm, PostForm, UserProfileForm
+from .mixins import CommentMixin, OnlyAuthorMixin, PostListMixin, PostMixin
 from .models import Category, Comment, Post, User
 from .service import get_posts
-
-
-class PostQuerySetMixin:
-    def get_queryset(self):
-        return get_posts()
-
-
-class PostListMixin(PostQuerySetMixin):
-    context_object_name = 'page_obj'
-    paginate_by = POST_LIST_LEN
 
 
 class IndexView(PostListMixin, ListView):
@@ -65,28 +55,6 @@ class EditProfileView(LoginRequiredMixin, UpdateView):
         return reverse(
             'blog:profile', kwargs={'username': self.object.username}
         )
-
-
-class OnlyAuthorMixin(UserPassesTestMixin):
-    def test_func(self):
-        object = self.get_object()
-        return object.author == self.request.user
-
-
-class PostMixin(LoginRequiredMixin):
-    model = Post
-    template_name = 'blog/create.html'
-    form_class = PostForm
-    pk_url_kwarg = 'post_id'
-
-    def get_success_url(self):
-        return reverse(
-            'blog:profile',
-            kwargs={'username': self.request.user.username})
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
 
 
 class PostCreateView(PostMixin, CreateView):
@@ -138,23 +106,6 @@ class PostDetailView(DetailView):
         context['form'] = CommentForm()
         context['comments'] = self.object.comments.select_related('author')
         return context
-
-
-class CommentMixin(LoginRequiredMixin):
-    model = Comment
-    form_class = CommentForm
-    template_name = 'blog/comment.html'
-    pk_url_kwarg = 'comment_id'
-
-    def dispatch(self, request, *args, **kwargs):
-        self.comment = self.get_object()
-        if self.comment.author != request.user:
-            return redirect('blog:post_detail', post_id=self.comment.post.id)
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_success_url(self):
-        return reverse('blog:post_detail',
-                       kwargs={'post_id': self.kwargs['post_id']})
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
