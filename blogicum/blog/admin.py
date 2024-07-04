@@ -8,6 +8,7 @@ admin.site.register(Location)
 
 admin.site.register(Comment)
 
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = (
