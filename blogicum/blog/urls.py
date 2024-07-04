@@ -5,7 +5,8 @@ from . import views
 app_name = 'blog'
 
 profile_urls = [
-    path('edit_profile/', views.EditProfileView.as_view(), name='edit_profile'),
+    path('edit_profile/',
+         views.EditProfileView.as_view(), name='edit_profile'),
     path('<username>/', views.ProfileView.as_view(), name='profile'),
 ]
 
