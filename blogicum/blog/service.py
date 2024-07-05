@@ -10,7 +10,7 @@ def get_posts(self=None):
         qs = qs.filter(
             is_published=True,
             category__is_published=True,
-            pub_date__date__lt=timezone.now()
+            pub_date__lte=timezone.now()
         )
     else:
         qs = qs.filter(author=self.profile)
