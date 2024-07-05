@@ -7,7 +7,9 @@ SECRET_KEY = 'django-insecure-x@othv)_dt)1#0e$*4bwz&rzfdzqt1o7(5(zl^!s6plb0*u8sw
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1',
-                 'localhost']
+                 'localhost',
+                 'maxstolpovskikh.pythonanywhere.com',
+                 'www.maxstolpovskikh.pythonanywhere.com']
 
 CSRF_FAILURE_VIEW = 'pages.views.csrf_failure'
 

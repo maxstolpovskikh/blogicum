@@ -2,9 +2,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 
-from .constants import (
-    IS_PUBLISHED_HELP, PUB_DATE_HELP, SLUG_HELP, SHORT_TEXT_LEN
-)
+from .constants import (IS_PUBLISHED_HELP, PUB_DATE_HELP, SHORT_TEXT_LEN,
+                        SLUG_HELP)
 
 User = get_user_model()
 
