@@ -98,7 +98,7 @@ class Post(PubModel):
         return self.text[:SHORT_TEXT_LEN]
 
     def get_absolute_url(self):
-        return reverse('blog:post_detail', args=self.pk)
+        return reverse('blog:post_detail', args=(self.pk,))
 
 
 class Comment(models.Model):

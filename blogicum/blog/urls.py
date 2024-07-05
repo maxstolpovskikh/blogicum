@@ -7,7 +7,7 @@ app_name = 'blog'
 profile_urls = [
     path('edit_profile/',
          views.EditProfileView.as_view(), name='edit_profile'),
-    path('<slug:username>/', views.ProfileView.as_view(), name='profile'),
+    path('<str:username>/', views.ProfileView.as_view(), name='profile'),
 ]
 
 posts_urls = [
