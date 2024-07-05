@@ -1,5 +1,4 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
@@ -58,7 +57,9 @@ class EditProfileView(LoginRequiredMixin, UpdateView):
 
 
 class PostCreateView(PostMixin, CreateView):
-    pass
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
 
 class PostDeleteView(PostMixin, OnlyAuthorMixin, DeleteView):
@@ -84,22 +85,17 @@ class PostDetailView(DetailView):
     def get_object(self):
         post_id = self.kwargs.get('post_id')
         queryset = self.get_queryset()
-
-        if self.request.user.is_authenticated:
-            obj = get_object_or_404(queryset, id=post_id)
-        else:
-            obj = get_object_or_404(
-                queryset.filter(
-                    is_published=True,
-                    category__is_published=True), id=post_id)
-
-        if not obj.is_published and obj.author != self.request.user:
-            raise Http404()
-
+        obj = get_object_or_404(queryset, id=post_id)
+        if obj.author != self.request.user:
+            obj = get_object_or_404(get_posts(), id=post_id)
         return obj
 
     def get_queryset(self):
-        return super().get_queryset().select_related('author', 'category')
+        return super().get_queryset().select_related(
+            'author',
+            'category',
+            'location'
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -119,13 +115,15 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('blog:post_detail',
-                       kwargs={'post_id': self.kwargs['post_id']})
+        return reverse(
+            'blog:post_detail',
+            kwargs={'post_id': self.kwargs['post_id']}
+        )
 
 
-class CommentUpdateView(CommentMixin, UpdateView):
+class CommentUpdateView(LoginRequiredMixin, CommentMixin, UpdateView):
     pass
 
 
-class CommentDeleteView(CommentMixin, DeleteView):
+class CommentDeleteView(LoginRequiredMixin, CommentMixin, DeleteView):
     pass

@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import include, path
 
 from . import views
 
@@ -7,7 +7,7 @@ app_name = 'blog'
 profile_urls = [
     path('edit_profile/',
          views.EditProfileView.as_view(), name='edit_profile'),
-    path('<username>/', views.ProfileView.as_view(), name='profile'),
+    path('<slug:username>/', views.ProfileView.as_view(), name='profile'),
 ]
 
 posts_urls = [

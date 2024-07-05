@@ -14,7 +14,6 @@ class PostQuerySetMixin:
 
 
 class PostListMixin(PostQuerySetMixin):
-    context_object_name = 'page_obj'
     paginate_by = POST_LIST_LEN
 
 
@@ -35,12 +34,8 @@ class PostMixin(LoginRequiredMixin):
             'blog:profile',
             kwargs={'username': self.request.user.username})
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
 
-
-class CommentMixin(LoginRequiredMixin):
+class CommentMixin:
     model = Comment
     form_class = CommentForm
     template_name = 'blog/comment.html'
